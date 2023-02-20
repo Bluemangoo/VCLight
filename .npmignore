@@ -1,1 +1,9 @@
+# Project Config
+/.idea
+.prettierrc.json
+.prettierignore.json
+
+# Typescript Files
 /src
+
+#
