@@ -1,0 +1,13 @@
+# Project Configs
+/.idea
+
+# Node Modules
+/node_modules
+
+# Build
+/dist
+
+# Lock File
+package-lock.json
+yarn.lock
+pnpm.lock

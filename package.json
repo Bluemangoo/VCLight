@@ -1,0 +1,22 @@
+{
+  "name": "vclight",
+  "version": "1.0.0",
+  "description": "A framework for vercel serverless app",
+  "author": "Bluemangoo",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bluemangoo/VCLight.git"
+  },
+  "keywords": [
+    "typescript",
+    "vercel"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  }
+}
