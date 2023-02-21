@@ -2,7 +2,7 @@
 /.idea
 tsconfig.json
 .prettierrc.json
-.prettierignore.json
+.prettierignore
 
 # Typescript Files
 /src
