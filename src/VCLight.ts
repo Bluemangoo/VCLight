@@ -3,7 +3,7 @@ import Response from "./types/response";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 
 export default class VCLight {
-    constructor(config: {} = {}) {
+    constructor(config: any = {}) {
         this.config = this.mergeConfig(config);
     }
 
