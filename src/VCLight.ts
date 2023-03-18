@@ -4,10 +4,21 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 
 export default class VCLight {
     constructor(config: {} = {}) {
-        this.config = config;
+        this.config = this.mergeConfig(config);
     }
 
-    readonly config: {};
+    readonly config: {
+        useBuilder: boolean;
+    };
+
+    mergeConfig(config: any) {
+        const defaultConfig = {
+            useBuilder: false
+        };
+
+        return { ...defaultConfig, ...config };
+    }
+
     plugins: Plugin[] = [];
 
     public use(plugin: Plugin) {
@@ -25,13 +36,17 @@ export default class VCLight {
             response.redirect(responseContent.status, responseContent.redirectUrl);
             return;
         }
-        response.status(responseContent.status).send(responseContent.response);
+        if (this.config.useBuilder) {
+            response.status(responseContent.status).send(responseContent.builder?.get());
+        }else {
+            response.status(responseContent.status).send(responseContent.response);
+        }
     }
 
     public async fetch(request: VercelRequest, response: VercelResponse) {
         let responseContent: Response = new Response();
 
-        const taskList = [];
+        const taskList: Promise<void>[] = [];
         for (const pluginsKey in this.plugins) {
             taskList[taskList.length] = this.plugins[pluginsKey].init(request, this);
         }
