@@ -1,5 +1,6 @@
 import Plugin from "./types/plugin";
 import Response from "./types/response";
+import { VercelRequest, VercelResponse } from "@vercel/node";
 
 export default class VCLight {
     constructor(config: {} = {}) {
@@ -19,38 +20,32 @@ export default class VCLight {
         this.broken = true;
     }
 
-    private sendResponse(response: any, responseContent: Response) {
+    private sendResponse(response: VercelResponse, responseContent: Response) {
         if (responseContent.redirect) {
-            response.redirect(responseContent.redirectUrl, responseContent.status);
+            response.redirect(responseContent.status, responseContent.redirectUrl);
             return;
         }
         response.status(responseContent.status).send(responseContent.response);
     }
 
-    public async fetch(request: any, response: any) {
+    public async fetch(request: VercelRequest, response: VercelResponse) {
         let responseContent: Response = new Response();
 
+        const taskList = [];
         for (const pluginsKey in this.plugins) {
-            await this.plugins[pluginsKey].init();
-            if(this.broken){
-                this.sendResponse(response,responseContent);
-                return
-            }
+            taskList[taskList.length] = this.plugins[pluginsKey].init(request, this);
+        }
+        await Promise.all(taskList);
+        if (this.broken) {
+            this.sendResponse(response, responseContent);
+            return;
         }
 
         for (const pluginsKey in this.plugins) {
-            await this.plugins[pluginsKey].process(request, response, responseContent);
-            if(this.broken){
-                this.sendResponse(response,responseContent);
-                return
-            }
-        }
-
-        for (const pluginsKey in this.plugins) {
-            await this.plugins[pluginsKey].after(request, response, responseContent);
-            if(this.broken){
-                this.sendResponse(response,responseContent);
-                return
+            await this.plugins[pluginsKey].process(request, response, responseContent, this);
+            if (this.broken) {
+                this.sendResponse(response, responseContent);
+                return;
             }
         }
 
