@@ -19,5 +19,7 @@ export default class VCLightResponse {
             this.response = data?.response;
         if (data?.builder)
             this.builder = data?.builder;
+        if (data?.context)
+            this.context = data?.context;
     }
 }
