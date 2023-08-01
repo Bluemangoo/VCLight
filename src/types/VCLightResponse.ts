@@ -6,6 +6,7 @@ export default class VCLightResponse {
     public status: number = 200;
     public response: any = "";
     public builder: ResponseBuilder | undefined;
+    public context: { [key: string]: any } = {};
 
     load(data: any) {
         if (data?.redirect)
