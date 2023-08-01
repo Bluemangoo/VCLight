@@ -1,4 +1,4 @@
-import Response from "./response";
+import VCLightResponse from "./VCLightResponse";
 import { VercelRequest } from "@vercel/node";
 import VCLight from "../VCLight";
 import { ServerResponse } from "http";
@@ -7,6 +7,6 @@ import { ServerResponse } from "http";
 export default interface Plugin {
     init(request: VercelRequest, app: VCLight): Promise<void>;
 
-    process(request: VercelRequest, response: ServerResponse, responseContent: Response, app: VCLight): Promise<void>;
+    process(request: VercelRequest, response: ServerResponse, responseContent: VCLightResponse, app: VCLight): Promise<void>;
 
 }

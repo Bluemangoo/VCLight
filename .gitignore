@@ -10,4 +10,4 @@
 # Lock File
 package-lock.json
 yarn.lock
-pnpm.lock
+pnpm-lock.yaml

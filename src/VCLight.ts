@@ -1,5 +1,5 @@
 import Plugin from "./types/plugin";
-import Response from "./types/response";
+import VCLightResponse from "./types/VCLightResponse";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 
 export default class VCLight {
@@ -31,7 +31,7 @@ export default class VCLight {
         this.broken = true;
     }
 
-    private sendResponse(response: VercelResponse, responseContent: Response) {
+    private sendResponse(response: VercelResponse, responseContent: VCLightResponse) {
         if (responseContent.redirect) {
             response.redirect(responseContent.status, responseContent.redirectUrl);
             return;
@@ -44,7 +44,7 @@ export default class VCLight {
     }
 
     public async fetch(request: VercelRequest, response: VercelResponse) {
-        let responseContent: Response = new Response();
+        let responseContent: VCLightResponse = new VCLightResponse();
 
         const taskList: Promise<void>[] = [];
         for (const pluginsKey in this.plugins) {

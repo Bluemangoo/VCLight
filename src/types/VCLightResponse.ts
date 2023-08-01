@@ -1,6 +1,6 @@
 import ResponseBuilder from "./responseBuilder";
 
-export default class Response {
+export default class VCLightResponse {
     public redirect: boolean = false;
     public redirectUrl: string = "/";
     public status: number = 200;
