@@ -1,4 +1,4 @@
-import Plugin from "./types/plugin";
+import VCLightMiddleware from "./types/VCLightMiddleware";
 import VCLightResponse from "./types/VCLightResponse";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 
@@ -19,9 +19,9 @@ export default class VCLight {
         return { ...defaultConfig, ...config };
     }
 
-    plugins: Plugin[] = [];
+    plugins: VCLightMiddleware[] = [];
 
-    public use(plugin: Plugin) {
+    public use(plugin: VCLightMiddleware) {
         this.plugins[this.plugins.length] = plugin;
     }
 
