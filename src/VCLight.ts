@@ -1,6 +1,8 @@
 import VCLightMiddleware from "./types/VCLightMiddleware";
 import VCLightResponse from "./types/VCLightResponse";
 import { VercelRequest, VercelResponse } from "@vercel/node";
+import { IncomingMessage, ServerResponse } from "http";
+import { addHelpers } from "./helper/helpers";
 
 export default class VCLight {
     constructor(config: any = {}) {
@@ -38,7 +40,7 @@ export default class VCLight {
         }
         if (this.config.useBuilder) {
             response.status(responseContent.status).send(responseContent.builder?.get());
-        }else {
+        } else {
             response.status(responseContent.status).send(responseContent.response);
         }
     }
@@ -65,5 +67,17 @@ export default class VCLight {
         }
 
         this.sendResponse(response, responseContent);
+    }
+
+    private async httpHandler(request: IncomingMessage, response: ServerResponse) {
+        const that = this;
+        await addHelpers(request, response);
+        await that.fetch(<VercelRequest>request, <VercelResponse>response);
+    }
+
+    static getHttpHandler(app: VCLight): (request: IncomingMessage, response: ServerResponse) => Promise<void> {
+        return async (request: IncomingMessage, response: ServerResponse) => {
+            await app.httpHandler(request, response);
+        };
     }
 }

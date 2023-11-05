@@ -17,7 +17,18 @@
     "build": "tsc"
   },
   "devDependencies": {
-    "typescript": "^4.9.5",
-    "@vercel/node": "^2.9.13"
+    "@types/content-type": "^1.1.7",
+    "@types/cookie": "^0.5.3",
+    "@types/end-of-stream": "^1.4.3",
+    "@types/etag": "^1.8.2",
+    "@types/node": "^20.8.10",
+    "@vercel/node": "^2.9.13",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "content-type": "^1.0.5",
+    "cookie": "^0.5.0",
+    "end-of-stream": "^1.4.4",
+    "etag": "^1.8.1"
   }
 }
