@@ -6,6 +6,7 @@ export default class VCLightResponse {
     public status: number = 200;
     public response: any = "";
     public builder: ResponseBuilder | undefined;
+    public end: boolean = false;
     public context: { [key: string]: any } = {};
 
     load(data: any) {
@@ -19,6 +20,8 @@ export default class VCLightResponse {
             this.response = data?.response;
         if (data?.builder)
             this.builder = data?.builder;
+        if (data?.end)
+            this.end = data?.end;
         if (data?.context)
             this.context = data?.context;
     }

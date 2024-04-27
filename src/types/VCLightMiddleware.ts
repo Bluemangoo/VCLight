@@ -5,8 +5,7 @@ import { ServerResponse } from "http";
 
 
 export default interface VCLightMiddleware {
-    init(request: VercelRequest, app: VCLight): Promise<void>;
-
     process(request: VercelRequest, response: ServerResponse, responseContent: VCLightResponse, app: VCLight): Promise<void>;
 
+    post(request: VercelRequest, response: ServerResponse, responseContent: VCLightResponse, app: VCLight): Promise<void>;
 }

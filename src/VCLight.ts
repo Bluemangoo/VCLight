@@ -21,16 +21,10 @@ export default class VCLight {
         return { ...defaultConfig, ...config };
     }
 
-    plugins: VCLightMiddleware[] = [];
+    middlewares: VCLightMiddleware[] = [];
 
     public use(plugin: VCLightMiddleware) {
-        this.plugins[this.plugins.length] = plugin;
-    }
-
-    private broken = false;
-
-    public breakApp() {
-        this.broken = true;
+        this.middlewares[this.middlewares.length] = plugin;
     }
 
     private sendResponse(response: VercelResponse, responseContent: VCLightResponse) {
@@ -45,39 +39,37 @@ export default class VCLight {
         }
     }
 
-    public async fetch(request: VercelRequest, response: VercelResponse) {
+    protected async fetch(request: VercelRequest, response: VercelResponse) {
         let responseContent: VCLightResponse = new VCLightResponse();
+        const posts: VCLightMiddleware[] = [];
 
-        const taskList: Promise<void>[] = [];
-        for (const pluginsKey in this.plugins) {
-            taskList[taskList.length] = this.plugins[pluginsKey].init(request, this);
-        }
-        await Promise.all(taskList);
-        if (this.broken) {
-            this.sendResponse(response, responseContent);
-            return;
-        }
-
-        for (const pluginsKey in this.plugins) {
-            await this.plugins[pluginsKey].process(request, response, responseContent, this);
-            if (this.broken) {
-                this.sendResponse(response, responseContent);
-                return;
+        for (const middleware of this.middlewares) {
+            posts.push(middleware);
+            await middleware.process(request, response, responseContent, this);
+            if (responseContent.end) {
+                break;
             }
+        }
+
+        for (const middleware of posts.reverse()) {
+            await middleware.post(request, response, responseContent, this);
         }
 
         this.sendResponse(response, responseContent);
     }
 
-    private async httpHandler(request: IncomingMessage, response: ServerResponse) {
+    public httpHandler(request: IncomingMessage, response: ServerResponse) {
         const that = this;
-        await addHelpers(request, response);
-        await that.fetch(<VercelRequest>request, <VercelResponse>response);
+        return async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
+            await addHelpers(request, response);
+            await that.fetch(<VercelRequest>request, <VercelResponse>response);
+        };
     }
 
-    static getHttpHandler(app: VCLight): (request: IncomingMessage, response: ServerResponse) => Promise<void> {
-        return async (request: IncomingMessage, response: ServerResponse) => {
-            await app.httpHandler(request, response);
+    public vercelHandler(request: VercelRequest, response: VercelResponse) {
+        const that = this;
+        return async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
+            await that.fetch(<VercelRequest>request, <VercelResponse>response);
         };
     }
 }
