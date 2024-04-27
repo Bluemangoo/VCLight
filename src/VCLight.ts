@@ -58,7 +58,7 @@ export default class VCLight {
         this.sendResponse(response, responseContent);
     }
 
-    public httpHandler(request: IncomingMessage, response: ServerResponse) {
+    public httpHandler(): (request: IncomingMessage, response: ServerResponse) => Promise<void> {
         const that = this;
         return async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
             await addHelpers(request, response);
@@ -66,7 +66,7 @@ export default class VCLight {
         };
     }
 
-    public vercelHandler(request: VercelRequest, response: VercelResponse) {
+    public vercelHandler(): (request: IncomingMessage, response: ServerResponse) => Promise<void> {
         const that = this;
         return async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
             await that.fetch(<VercelRequest>request, <VercelResponse>response);
