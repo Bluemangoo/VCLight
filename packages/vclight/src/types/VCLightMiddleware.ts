@@ -1,11 +1,10 @@
 import VCLightResponse from "./VCLightResponse";
-import { VercelRequest } from "@vercel/node";
 import VCLight from "../VCLight";
-import { ServerResponse } from "http";
+import VCLightRequest from "./VCLightRequest";
 
 
 export default interface VCLightMiddleware {
-    process(request: VercelRequest, response: ServerResponse, responseContent: VCLightResponse, app: VCLight): Promise<void>;
+    process(request: VCLightRequest, response: VCLightResponse, app: VCLight): Promise<void>;
 
-    post(request: VercelRequest, response: ServerResponse, responseContent: VCLightResponse, app: VCLight): Promise<void>;
+    post(request: VCLightRequest, response: VCLightResponse, app: VCLight): Promise<void>;
 }

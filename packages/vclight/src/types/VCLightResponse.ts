@@ -1,10 +1,12 @@
 import ResponseBuilder from "./responseBuilder";
+import { OutgoingHttpHeaders } from "node:http";
 
 export default class VCLightResponse {
     public redirect: boolean = false;
     public redirectUrl: string = "/";
     public status: number = 200;
     public response: any = "";
+    public headers: OutgoingHttpHeaders = {};
     public builder: ResponseBuilder | undefined;
     public end: boolean = false;
     public context: { [key: string]: any } = {};
@@ -18,6 +20,8 @@ export default class VCLightResponse {
             this.status = data?.status;
         if (data?.response)
             this.response = data?.response;
+        if (data?.headers)
+            this.headers = data?.headers;
         if (data?.builder)
             this.builder = data?.builder;
         if (data?.end)

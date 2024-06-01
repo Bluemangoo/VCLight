@@ -1,6 +1,6 @@
 {
   "name": "vclight",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "A framework for vercel serverless app",
   "author": "Bluemangoo",
   "license": "MIT",
@@ -17,6 +17,7 @@
     "build": "tsc"
   },
   "devDependencies": {
+    "@netlify/functions": "^2.7.0",
     "@types/content-type": "^1.1.8",
     "@types/cookie": "^0.6.0",
     "@types/end-of-stream": "^1.4.4",

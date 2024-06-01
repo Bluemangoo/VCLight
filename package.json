@@ -9,6 +9,7 @@
     "build:vclight": "pnpm -C packages/vclight build",
     "build:vclight-router": "pnpm -C packages/vclight-router build",
     "build": "pnpm run /^build:.*/",
-    "publish": "pnpm run build&&pnpm -r publish"
+    "publish": "pnpm run build&&pnpm -r publish",
+    "postinstall": "pnpm run build"
   }
 }
