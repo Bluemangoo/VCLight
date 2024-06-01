@@ -8,8 +8,8 @@
   "scripts": {
     "build:vclight": "pnpm -C packages/vclight build",
     "build:vclight-router": "pnpm -C packages/vclight-router build",
-    "build": "pnpm run /^build:.*/",
-    "publish": "pnpm run build&&pnpm -r publish",
+    "build": "pnpm run build:vclight && pnpm run build:vclight-router",
+    "publish": "pnpm run build && pnpm -r publish",
     "postinstall": "pnpm run build"
   }
 }
