@@ -1,11 +1,10 @@
 import ResponseContext from "./types/responseContext";
 import RequestContext from "./types/requestContext";
-import { serialize } from "cookie";
-import VCLight, { VCLightResponse, VCLightMiddleware } from "vclight";
+import { parse, serialize } from "cookie";
+import VCLight, { VCLightResponse, VCLightMiddleware, VCLightRequest } from "vclight";
 import buildInRouters from "./buildInRouters";
-import { VercelRequest } from "@vercel/node";
-import { ServerResponse } from "http";
 import VCLightRouterConfig from "./types/vclightRouterConfig";
+import { parse as parseURL } from "url";
 
 interface Pattern {
     pattern: RegExp;
@@ -104,12 +103,11 @@ export default class VCLightRouter implements VCLightMiddleware {
      *
      * Do not call this function unless inside VCLight app.
      *
-     * @param request VercelRequest
-     * @param response ServerResponse(VercelResponse)
-     * @param responseContent Response content
+     * @param request VCLight request
+     * @param response VCLight response
      * @param app VCLight app
      */
-    async post(request: VercelRequest, response: ServerResponse, responseContent: VCLightResponse, app: VCLight): Promise<void> {
+    async post(request: VCLightRequest, response: VCLightResponse, app: VCLight): Promise<void> {
     }
 
     /**
@@ -117,13 +115,12 @@ export default class VCLightRouter implements VCLightMiddleware {
      *
      * Do not call this function unless inside VCLight app.
      *
-     * @param request VercelRequest
-     * @param response ServerResponse(VercelResponse)
-     * @param responseContent Response content
+     * @param request VCLight request
+     * @param response VCLight response
      * @param app VCLight app
      */
-    async process(request: VercelRequest, response: ServerResponse, responseContent: VCLightResponse, app: VCLight): Promise<void> {
-        if (responseContent.end) {
+    async process(request: VCLightRequest, response: VCLightResponse, app: VCLight): Promise<void> {
+        if (response.end) {
             return;
         }
 
@@ -132,9 +129,16 @@ export default class VCLightRouter implements VCLightMiddleware {
         const fn: (data: RequestContext, response: ResponseContext) => Promise<void> = this.get(<string>parsedUrl.pathname);
 
         //prepare request data
+        let cookies: NodeJS.Dict<string>;
+        const header: undefined | string | string[] = request.headers.cookie;
+        if (header) {
+            cookies = parse(Array.isArray(header) ? header.join(";") : header);
+        } else {
+            cookies = {};
+        }
         const requestContext: RequestContext = {
             url: parsedUrl.pathname,
-            query: request.query,
+            query: parseURL(request.url, true).query,
             body: (() => {
                 try {
                     return request.body;
@@ -142,18 +146,18 @@ export default class VCLightRouter implements VCLightMiddleware {
                     return null;
                 }
             })(),
-            cookies: request.cookies,
+            cookies,
             method: <string>request.method,
             headers: request.headers
         };
-        const responseContext = new ResponseContext(responseContent);
+        const responseContext = new ResponseContext(response);
 
         //processing
         await fn(requestContext, responseContext);
 
         //process response
-        responseContent.load(responseContext);
-        if (responseContent.redirect) {
+        response.load(responseContext);
+        if (response.redirect) {
             return;
         }
 
@@ -166,14 +170,14 @@ export default class VCLightRouter implements VCLightMiddleware {
             });
         }
         if (cookie.length > 0) {
-            response.setHeader("Set-Cookie", cookie);
+            response.headers["set-cookie"] = cookie;
         }
 
         if (responseContext.contentType) {
-            response.setHeader("content-type", responseContext.contentType);
+            response.headers["content-type"] = responseContext.contentType;
         }
         if (responseContext.cache) {
-            response.setHeader("cache-control", "stale-while-revalidate=" + responseContext.cache.toString());
+            response.headers["cache-control"] = "stale-while-revalidate=" + responseContext.cache.toString();
         }
     }
 }
