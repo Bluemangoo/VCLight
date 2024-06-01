@@ -261,7 +261,7 @@ function restoreBody(req: IncomingMessage, body: Buffer) {
     replicateBody.end();
 }
 
-async function readBody(req: IncomingMessage) {
+export async function readBody(req: IncomingMessage) {
     const body = (await serializeBody(req)) || Buffer.from("");
     restoreBody(req, body);
     return body;

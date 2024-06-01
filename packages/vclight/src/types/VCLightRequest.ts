@@ -2,6 +2,7 @@ import { RawHttpRequest, RawNetlifyRequest, RawRequest, RawVercelRequest } from 
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from "http";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { Context } from "@netlify/functions";
+import { getBodyParser, readBody } from "../helper/helpers";
 
 export interface VCLightRequestBase {
     rawRequest: RawRequest,
@@ -31,29 +32,51 @@ export default class VCLightRequest implements VCLightRequestBase {
         this.body = context.body;
     }
 
-    static fromHttp(request: IncomingMessage, response: ServerResponse): VCLightRequest {
+    static async fromHttp(request: IncomingMessage, response: ServerResponse): Promise<VCLightRequest> {
+        let body;
+        try {
+            const contentType=request.headers["content-type"];
+            const b =
+                contentType == undefined ? Buffer.from("") : await readBody(request);
+            body=getBodyParser(b, contentType);
+        } catch {
+            body = null;
+        }
         return new VCLightRequest({
             ...request,
             rawRequest: new RawHttpRequest(request, response),
             source: "http",
             method: request.method || "",
             url: request.url || "",
-            body: undefined
+            body
         });
     }
 
-    static fromVercel(request: VercelRequest, response: VercelResponse): VCLightRequest {
+    static async fromVercel(request: VercelRequest, response: VercelResponse): Promise<VCLightRequest> {
+        let body;
+        try {
+            body = await request.body;
+        } catch {
+            body = null;
+        }
         return new VCLightRequest({
             ...request,
             rawRequest: new RawVercelRequest(request, response),
             source: "vercel",
             method: request.method || "",
-            url: request.url || ""
+            url: request.url || "",
+            body
         });
     }
 
-    static fromNetlify(request: Request, context: Context): VCLightRequest {
+    static async fromNetlify(request: Request, context: Context): Promise<VCLightRequest> {
         const headers: IncomingHttpHeaders = {};
+        let body;
+        try {
+            body = await request.text();
+        } catch {
+            body = null;
+        }
         for (const [key, value] of request.headers.entries()) {
             headers[key.toLowerCase()] = value;
         }
@@ -62,7 +85,7 @@ export default class VCLightRequest implements VCLightRequestBase {
             rawRequest: new RawNetlifyRequest(request, context),
             source: "netlify",
             headers,
-            body: undefined
+            body
         });
     }
 }

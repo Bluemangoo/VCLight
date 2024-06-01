@@ -77,7 +77,7 @@ export default class VCLight {
     public httpHandler(): (request: IncomingMessage, response: ServerResponse) => Promise<void> {
         const that = this;
         return async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
-            const res = await that.fetch(VCLightRequest.fromHttp(request, response));
+            const res = await that.fetch(await VCLightRequest.fromHttp(request, response));
             that.sendServerResponse(request, response, res);
         };
     }
@@ -85,7 +85,7 @@ export default class VCLight {
     public vercelHandler(): (request: VercelRequest, response: VercelResponse) => Promise<void> {
         const that = this;
         return async (request: VercelRequest, response: VercelResponse): Promise<void> => {
-            const res = await that.fetch(VCLightRequest.fromVercel(request, response));
+            const res = await that.fetch(await VCLightRequest.fromVercel(request, response));
             that.sendServerResponse(request, response, res);
         };
     }
@@ -93,7 +93,7 @@ export default class VCLight {
     public netlifyHandler(): (request: Request, context: Context) => Promise<Response> {
         const that = this;
         return async (request: Request, context: Context): Promise<Response> => {
-            const res = await that.fetch(VCLightRequest.fromNetlify(request, context));
+            const res = await that.fetch(await VCLightRequest.fromNetlify(request, context));
 
             if (204 === res.status || 304 === res.status) {
                 res.headers["content-type"] = undefined;
