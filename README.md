@@ -1,22 +1,36 @@
 # VCLight
 
-A framework for vercel serverless app
+VCLight is a serverless framework, initially designed for Vercel Serverless, and gradually supporting more platforms like node `http` module and Netlify Function.
 
----
+See the documents at [VCLight Document](https://vclight.bluemangoo.net/)
 
-## Installing
+## Getting-started
 
-Using npm:
+Use VCLight Cli to create a project:
+
 ```shell
-$ npm install vclight
+npx vclight-cli create vclight-test
 ```
 
-Using yarn:
+Install dependencies:
+
 ```shell
-$ yarn add vclight
+cd vclight-test
+npm i
 ```
 
-Using pnpm:
+Run:
+
 ```shell
-$ pnpm add vclight
+npm run serve
 ```
+
+## Development
+
+We use PNPM as our package manager.
+
+```shell
+pnpm install
+```
+
+This repo is a pnpm workspace. All our package is under `packages/`.

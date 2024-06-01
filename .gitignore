@@ -1,12 +1,15 @@
 # Project Configs
-/.idea
+.idea/
+.vscode/
 
 # Node Modules
-/node_modules
+node_modules/
 
 # Build
-/dist
+packages/vclight/dist/
+packages/vclight-router/dist/
+packages/vclight-cli/lib
 
-# Lock File
+# Lock File NOT from PNPM
 package-lock.json
 yarn.lock

@@ -3,6 +3,7 @@
 tsconfig.json
 .prettierrc.json
 .prettierignore
+npd.json
 
 # Typescript Files
 /src
@@ -10,4 +11,4 @@ tsconfig.json
 # Lock File
 package-lock.json
 yarn.lock
-pnpm.lock
+pnpm-lock.yaml

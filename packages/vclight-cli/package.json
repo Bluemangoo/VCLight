@@ -1,0 +1,28 @@
+{
+  "name": "vclight-cli",
+  "version": "1.0.9",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "vclight": "bin/vclight.js"
+  },
+  "directories": {
+    "lib": "./lib",
+    "bin": "./bin"
+  },
+  "keywords": [
+    "vercel"
+  ],
+  "author": "Bluemangoo",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^10.0.0",
+    "ejs": "^3.1.9",
+    "execa": "^5.1.1",
+    "inquirer": "^8.2.5",
+    "log-symbols": "^4.1.0",
+    "minimist": "^1.2.8",
+    "ora": "^5.4.1"
+  }
+}

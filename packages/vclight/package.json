@@ -1,0 +1,34 @@
+{
+  "name": "vclight",
+  "version": "2.0.1",
+  "description": "A framework for vercel serverless app",
+  "author": "Bluemangoo",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bluemangoo/VCLight.git"
+  },
+  "keywords": [
+    "typescript",
+    "vercel"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/content-type": "^1.1.8",
+    "@types/cookie": "^0.6.0",
+    "@types/end-of-stream": "^1.4.4",
+    "@types/etag": "^1.8.3",
+    "@types/node": "^20.12.7",
+    "@vercel/node": "^3.0.27",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "content-type": "^1.0.5",
+    "cookie": "^0.6.0",
+    "end-of-stream": "^1.4.4",
+    "etag": "^1.8.1"
+  }
+}

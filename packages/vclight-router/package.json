@@ -1,0 +1,29 @@
+{
+  "name": "vclight-router",
+  "version": "1.2.2",
+  "description": "Router for VCLight",
+  "author": "Bluemangoo",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bluemangoo/VCLight-Router.git"
+  },
+  "keywords": [
+    "typescript",
+    "vercel"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/cookie": "^0.6.0",
+    "@types/node": "^20.12.7",
+    "@vercel/node": "^3.0.27",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "cookie": "^0.6.0",
+    "vclight": "workspace:^"
+  }
+}

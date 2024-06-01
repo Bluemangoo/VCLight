@@ -1,0 +1,10 @@
+import VCLight from "vclight";
+<%if(template.router){-%>
+import router from "./router";
+<%}-%>
+
+const app = new VCLight();
+<%if(template.router){-%>
+app.use(router);
+<%}-%>
+export default app;

@@ -1,0 +1,13 @@
+# Project Config
+/.idea
+tsconfig.json
+.prettierrc.json
+.prettierignore
+
+# Typescript Files
+/src
+
+# Lock File
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
