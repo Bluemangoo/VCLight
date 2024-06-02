@@ -1,11 +1,15 @@
 <%if(template.gitignore){-%>
 # Project Configs
-.idea/
+.idea
 
 # Node Modules
-node_modules/
+node_modules
 
-# Lock File
-package-lock.json
-pnpm-lock.yaml
+# Cache
+<%if(template.vercel){-%>
+.vercel
+<%}-%>
+<%if(template.netlify){-%>
+.netlify
+<%}-%>
 <%}%>

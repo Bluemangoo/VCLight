@@ -1,3 +1,4 @@
+<%if(template.vercel){-%>
 {
   "builds": [
     {
@@ -8,7 +9,8 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "src/main.ts"
+      "dest": "src/vercelHandler.ts"
     }
   ]
 }
+<%}%>

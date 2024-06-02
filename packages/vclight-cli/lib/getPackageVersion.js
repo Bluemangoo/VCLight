@@ -1,0 +1,1 @@
+module.exports = async (pkg)=>require("execa").sync("npm", ["view", pkg, "version"]).stdout;

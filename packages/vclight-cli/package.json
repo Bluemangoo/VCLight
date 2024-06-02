@@ -1,6 +1,6 @@
 {
   "name": "vclight-cli",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -11,7 +11,9 @@
     "bin": "./bin"
   },
   "keywords": [
-    "vercel"
+    "vercel",
+    "netlify",
+    "http-server"
   ],
   "author": "Bluemangoo",
   "license": "MIT",

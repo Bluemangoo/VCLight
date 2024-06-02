@@ -1,10 +1,10 @@
-<%if(template.httpServer){-%>
+<%if(template.http){-%>
 import * as http from "http";
-import app from "../src/app/app";
+import app from "./app/app";
 
 const server = http.createServer();
 
-server.on("request", app.httpHandler);
+server.on("request", app.httpHandler());
 
 server.listen(3000, () => {
     console.log("VCLight serve");
