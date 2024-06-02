@@ -35,10 +35,10 @@ export default class VCLightRequest implements VCLightRequestBase {
     static async fromHttp(request: IncomingMessage, response: ServerResponse): Promise<VCLightRequest> {
         let body;
         try {
-            const contentType=request.headers["content-type"];
+            const contentType = request.headers["content-type"];
             const b =
                 contentType == undefined ? Buffer.from("") : await readBody(request);
-            body=getBodyParser(b, contentType);
+            body = getBodyParser(b, contentType);
         } catch {
             body = null;
         }
@@ -65,6 +65,7 @@ export default class VCLightRequest implements VCLightRequestBase {
             source: "vercel",
             method: request.method || "",
             url: request.url || "",
+            headers: request.headers,
             body
         });
     }
@@ -84,6 +85,8 @@ export default class VCLightRequest implements VCLightRequestBase {
             ...request,
             rawRequest: new RawNetlifyRequest(request, context),
             source: "netlify",
+            url: new URL(request.url).pathname,
+            method: request.method,
             headers,
             body
         });

@@ -95,20 +95,35 @@ export default class VCLight {
         return async (request: Request, context: Context): Promise<Response> => {
             const res = await that.fetch(await VCLightRequest.fromNetlify(request, context));
 
-            if (204 === res.status || 304 === res.status) {
-                res.headers["content-type"] = undefined;
-                res.headers["content-length"] = undefined;
-                res.headers["transfer-encoding"] = undefined;
-            }
-            const response = res.redirect ?
+            let response = res.redirect ?
                 Response.redirect(res.redirectUrl, res.status)
                 : new Response(res.response, {
                     status: res.status
                 });
-            for (const header of response.headers) {
-                response.headers.set(header[0].split("-").map(segment => {
+            if (204 === res.status || 304 === res.status) {
+                res.headers["content-type"] = undefined;
+                res.headers["content-length"] = undefined;
+                res.headers["transfer-encoding"] = undefined;
+                response = new Response(null, {
+                    status: res.status
+                });
+            }
+            for (const key in res.headers) {
+                if (res.headers[key] == null) {
+                    continue;
+                }
+                let value = "";
+                let v = res.headers[key];
+                if (typeof v == "number") {
+                    value = v.toString();
+                } else if (Array.isArray(v)) {
+                    value = v.join(", ");
+                } else {
+                    value = (v || "").toString();
+                }
+                response.headers.set(key.split("-").map(segment => {
                     return segment.charAt(0).toUpperCase() + segment.slice(1);
-                }).join("-"), header[1]);
+                }).join("-"), value);
             }
 
             return response;
