@@ -6,24 +6,38 @@ See the documents at [VCLight Document](https://vclight.bluemangoo.net/)
 
 ## Getting-started
 
-Use VCLight Cli to create a project:
+### Use VCLight Cli to create a project
 
 ```shell
 npx vclight-cli create vclight-test
 ```
 
-Install dependencies:
+### Use template to create a project
+
+Create a project with the template [here](https://github.com/Bluemangoo/VCLight-Example).
+
+### Install dependencies
 
 ```shell
 cd vclight-test
 npm i
 ```
 
-Run:
+### Run
 
 ```shell
-npm run serve
+npm run dev:vercel
 ```
+
+```shell
+npm run dev:netlify
+```
+
+```shell
+npm run dev:node
+```
+
+```shell
 
 ## Development
 
