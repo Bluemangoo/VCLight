@@ -48,6 +48,7 @@ export default class VCLightRequest implements VCLightRequestBase {
             source: "http",
             method: request.method || "",
             url: request.url || "",
+            headers: request.headers,
             body
         });
     }
