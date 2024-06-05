@@ -181,8 +181,15 @@ module.exports = async function(name) {
     if (featuresChosen.includes(keys.gitignore)) {
         template.gitignore = true;
     }
-    if (featuresChosen.includes(keys.httpServer)) {
-        template.httpServer = true;
+
+    if (handlerChosen.includes(keys.http)) {
+        template.http = true;
+    }
+    if (handlerChosen.includes(keys.vercel)) {
+        template.vercel = true;
+    }
+    if (handlerChosen.includes(keys.netlify)) {
+        template.netlify = true;
     }
 
     if (template.vercel) {
@@ -191,7 +198,7 @@ module.exports = async function(name) {
     if (template.netlify) {
         devDependencies.push("netlify-cli");
     }
-    if (template.httpServer) {
+    if (template.http) {
         devDependencies.push("ts-node", "typescript", "nodemon");
     }
 
