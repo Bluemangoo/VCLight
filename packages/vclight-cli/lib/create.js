@@ -229,7 +229,7 @@ module.exports = async function(name) {
                 packageJson.scripts["dev:netlify"] = "functions:serve";
             }
             if (template.http) {
-                packageJson.scripts["dev:http"] = "nodemon src/httpHandler.ts";
+                packageJson.scripts["dev:http"] = "nodemon src/httpEntry.ts";
             }
             let taskList = [];
             let deps = {};
