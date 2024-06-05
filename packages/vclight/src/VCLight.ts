@@ -28,33 +28,6 @@ export default class VCLight {
         this.middlewares[this.middlewares.length] = plugin;
     }
 
-    private sendServerResponse(rawRequest: IncomingMessage, rawResponse: ServerResponse, vcLightResponse: VCLightResponse) {
-        for (const header in vcLightResponse.headers) {
-            if (vcLightResponse.headers[header] != null) {
-                rawResponse.setHeader(header, (vcLightResponse.headers[header] || "").toString());
-            }
-        }
-        if (vcLightResponse.redirect) {
-            rawResponse.writeHead(vcLightResponse.status, { Location: vcLightResponse.redirectUrl }).end();
-            return;
-        }
-        rawResponse.statusCode = vcLightResponse.status;
-        if (204 === rawResponse.statusCode || 304 === rawResponse.statusCode) {
-            rawResponse.removeHeader("Content-Type");
-            rawResponse.removeHeader("Content-Length");
-            rawResponse.removeHeader("Transfer-Encoding");
-            rawResponse.end();
-        }
-        if (rawRequest.method === "HEAD") {
-            rawResponse.end();
-        }
-        let chunk = this.config.useBuilder ? vcLightResponse.builder?.get() : vcLightResponse.response;
-        if (typeof chunk == "object") {
-            chunk = JSON.stringify(chunk);
-        }
-        rawResponse.end(chunk);
-    }
-
     protected async fetch(request: VCLightRequest): Promise<VCLightResponse> {
         let response: VCLightResponse = new VCLightResponse();
         const posts: VCLightMiddleware[] = [];
@@ -71,14 +44,63 @@ export default class VCLight {
             await middleware.post(request, response, this);
         }
 
+        if (response.redirect && (response.status < 300 || response.status >= 400)) {
+            response.status = 307;
+        }
+
+        if (response.status >= 300 || response.status < 400) {
+            response.headers.location = response.redirectUrl;
+            if (response.response == "") {
+                response.response = `<meta http-equiv="refresh" content="0; url=${response.redirectUrl}" />`;
+            }
+        }
+
+        if (204 === response.status || 304 === response.status) {
+            response.headers["content-type"] = undefined;
+            response.headers["content-length"] = undefined;
+            response.headers["transfer-encoding"] = undefined;
+            response.response = "";
+        }
+
+        if (request.method == "HEAD") {
+            response.response = "";
+        }
+
+        let chunk = this.config.useBuilder ? response.builder?.get() : response.response;
+        if (chunk == null) {
+            chunk = "";
+        } else if (typeof chunk == "object") {
+            chunk = JSON.stringify(chunk);
+        } else {
+            chunk = chunk.toString();
+        }
+
+        if (chunk == "") {
+            chunk = null;
+        }
+
+        response.response = chunk;
+
         return response;
+    }
+
+    private sendServerResponse(rawResponse: ServerResponse, vcLightResponse: VCLightResponse) {
+        for (const header in vcLightResponse.headers) {
+            if (vcLightResponse.headers[header] == null) {
+                rawResponse.removeHeader(header);
+            } else {
+                rawResponse.setHeader(header, (vcLightResponse.headers[header] || "").toString());
+            }
+        }
+        rawResponse.statusCode = vcLightResponse.status;
+        rawResponse.end(vcLightResponse.response);
     }
 
     public httpHandler(): (request: IncomingMessage, response: ServerResponse) => Promise<void> {
         const that = this;
         return async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
             const res = await that.fetch(await VCLightRequest.fromHttp(request, response));
-            that.sendServerResponse(request, response, res);
+            that.sendServerResponse(response, res);
         };
     }
 
@@ -86,44 +108,39 @@ export default class VCLight {
         const that = this;
         return async (request: VercelRequest, response: VercelResponse): Promise<void> => {
             const res = await that.fetch(await VCLightRequest.fromVercel(request, response));
-            that.sendServerResponse(request, response, res);
+            that.sendServerResponse(response, res);
         };
     }
 
     public netlifyHandler(): (request: Request, context: Context) => Promise<Response> {
         const that = this;
         return async (request: Request, context: Context): Promise<Response> => {
-            const res = await that.fetch(await VCLightRequest.fromNetlify(request, context));
+            const vcLightResponse = await that.fetch(await VCLightRequest.fromNetlify(request, context));
 
-            let response = res.redirect ?
-                Response.redirect(res.redirectUrl, res.status)
-                : new Response(res.response, {
-                    status: res.status
-                });
-            if (204 === res.status || 304 === res.status) {
-                res.headers["content-type"] = undefined;
-                res.headers["content-length"] = undefined;
-                res.headers["transfer-encoding"] = undefined;
-                response = new Response(null, {
-                    status: res.status
-                });
-            }
-            for (const key in res.headers) {
-                if (res.headers[key] == null) {
+            let response = new Response(vcLightResponse.response, {
+                status: vcLightResponse.status
+            });
+            for (const key in vcLightResponse.headers) {
+                if (vcLightResponse.headers[key] == null) {
                     continue;
                 }
                 let value = "";
-                let v = res.headers[key];
-                if (typeof v == "number") {
-                    value = v.toString();
-                } else if (Array.isArray(v)) {
-                    value = v.join(", ");
-                } else {
-                    value = (v || "").toString();
-                }
-                response.headers.set(key.split("-").map(segment => {
+                let v = vcLightResponse.headers[key];
+                const k = key.split("-").map(segment => {
                     return segment.charAt(0).toUpperCase() + segment.slice(1);
-                }).join("-"), value);
+                }).join("-");
+                if (v == null) {
+                    response.headers.delete(k);
+                } else {
+                    if (typeof v == "number") {
+                        value = v.toString();
+                    } else if (Array.isArray(v)) {
+                        value = v.join(", ");
+                    } else {
+                        value = (v || "").toString();
+                    }
+                    response.headers.set(k, value);
+                }
             }
 
             return response;
