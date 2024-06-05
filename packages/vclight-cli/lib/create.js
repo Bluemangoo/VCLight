@@ -226,7 +226,7 @@ module.exports = async function(name) {
                 packageJson.scripts["dev:vercel"] = "vercel dev";
             }
             if (template.netlify) {
-                packageJson.scripts["dev:netlify"] = "functions:serve";
+                packageJson.scripts["dev:netlify"] = "netlify functions:serve";
             }
             if (template.http) {
                 packageJson.scripts["dev:http"] = "nodemon src/httpEntry.ts";
