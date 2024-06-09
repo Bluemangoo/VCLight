@@ -2,7 +2,7 @@
 
 VCLight is a serverless framework, initially designed for Vercel Serverless, and gradually supporting more platforms like node `http` module and Netlify Function.
 
-See the documents at [VCLight Document](https://vclight.bluemangoo.net/)
+See the documents at [VCLight Document](https://vclight.bluemangoo.net/) \([repo](https://github.com/Bluemangoo/VCLight-Docs)\)
 
 ## Getting-started
 
@@ -36,8 +36,6 @@ npm run dev:netlify
 ```shell
 npm run dev:node
 ```
-
-```shell
 
 ## Development
 
