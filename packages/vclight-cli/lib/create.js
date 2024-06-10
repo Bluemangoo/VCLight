@@ -192,6 +192,10 @@ module.exports = async function(name) {
         template.netlify = true;
     }
 
+    if (template.prettier) {
+        devDependencies.push("prettier");
+    }
+
     if (template.vercel) {
         devDependencies.push("vercel");
     }
