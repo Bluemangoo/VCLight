@@ -1,7 +1,7 @@
 import ResponseContext from "./types/responseContext";
 import RequestContext from "./types/requestContext";
 import { parse, serialize } from "cookie";
-import VCLight, { VCLightResponse, VCLightMiddleware, VCLightRequest } from "vclight";
+import { VCLightResponse, VCLightMiddleware, VCLightRequest, VCLightApp } from "vclight";
 import buildInRouters from "./buildInRouters";
 import VCLightRouterConfig from "./types/vclightRouterConfig";
 import { parse as parseURL } from "url";
@@ -107,7 +107,7 @@ export default class VCLightRouter implements VCLightMiddleware {
      * @param response VCLight response
      * @param app VCLight app
      */
-    async post(request: VCLightRequest, response: VCLightResponse, app: VCLight): Promise<void> {
+    async post(request: VCLightRequest, response: VCLightResponse, app: VCLightApp): Promise<void> {
     }
 
     /**
@@ -119,7 +119,7 @@ export default class VCLightRouter implements VCLightMiddleware {
      * @param response VCLight response
      * @param app VCLight app
      */
-    async process(request: VCLightRequest, response: VCLightResponse, app: VCLight): Promise<void> {
+    async process(request: VCLightRequest, response: VCLightResponse, app: VCLightApp): Promise<void> {
         if (response.end) {
             return;
         }

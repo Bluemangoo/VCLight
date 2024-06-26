@@ -1,10 +1,10 @@
 import VCLightResponse from "./VCLightResponse";
-import VCLight from "../VCLight";
 import VCLightRequest from "./VCLightRequest";
+import VCLightApp from "./VCLightApp";
 
 
 export default interface VCLightMiddleware {
-    process(request: VCLightRequest, response: VCLightResponse, app: VCLight): Promise<void>;
+    process(request: VCLightRequest, response: VCLightResponse, app: VCLightApp): Promise<void>;
 
-    post(request: VCLightRequest, response: VCLightResponse, app: VCLight): Promise<void>;
+    post(request: VCLightRequest, response: VCLightResponse, app: VCLightApp): Promise<void>;
 }

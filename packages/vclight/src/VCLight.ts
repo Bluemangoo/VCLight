@@ -4,8 +4,9 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 import { IncomingMessage, ServerResponse } from "http";
 import { Context } from "@netlify/functions";
 import VCLightRequest from "./types/VCLightRequest";
+import VCLightApp from "./types/VCLightApp";
 
-export default class VCLight {
+export default class VCLight implements VCLightApp {
     constructor(config: any = {}) {
         this.config = this.mergeConfig(config);
     }
