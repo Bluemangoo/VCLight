@@ -7,9 +7,9 @@
   },
   "scripts": {
     "build:vclight": "pnpm -C packages/vclight build",
-    "build:vclight-router": "pnpm -C packages/vclight-router build",
+    "build:vclight-router": "pnpm -C packages/router build",
     "build": "pnpm run build:vclight && pnpm run build:vclight-router",
-    "publish": "pnpm run build && pnpm -r publish",
+    "publish": "pnpm run build && pnpm -r publish --access=public",
     "postinstall": "pnpm run build"
   }
 }

@@ -8,15 +8,15 @@ Router for VCLight
 
 Using npm:
 ```shell
-$ npm install vclight-router
+$ npm install router
 ```
 
 Using yarn:
 ```shell
-$ yarn add vclight-router
+$ yarn add router
 ```
 
 Using pnpm:
 ```shell
-$ pnpm add vclight-router
+$ pnpm add router
 ```

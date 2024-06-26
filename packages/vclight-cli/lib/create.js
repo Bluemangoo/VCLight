@@ -172,7 +172,7 @@ module.exports = async function(name) {
     let devDependencies = ["@types/node"];
 
     if (template.router) {
-        dependencies[dependencies.length] = "vclight-router";
+        dependencies[dependencies.length] = "@vclight/router";
     }
 
     if (featuresChosen.includes(keys.prettier)) {

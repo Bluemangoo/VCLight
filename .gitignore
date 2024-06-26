@@ -7,7 +7,7 @@ node_modules/
 
 # Build
 packages/vclight/dist/
-packages/vclight-router/dist/
+packages/router/dist/
 
 # Lock File NOT from PNPM
 package-lock.json
