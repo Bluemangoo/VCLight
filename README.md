@@ -9,7 +9,7 @@ See the documents at [VCLight Document](https://vclight.bluemangoo.net/) \([repo
 ### Use VCLight Cli to create a project
 
 ```shell
-npx vclight-cli create vclight-test
+npx @vclight/cli create vclight-test
 ```
 
 ### Use template to create a project
