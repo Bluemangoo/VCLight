@@ -49,7 +49,7 @@ export default class VCLight implements VCLightApp {
             response.status = 307;
         }
 
-        if (response.status >= 300 || response.status < 400) {
+        if (response.status >= 300 && response.status < 400) {
             response.headers.location = response.redirectUrl;
             if (response.response == "") {
                 response.response = `<meta http-equiv="refresh" content="0; url=${response.redirectUrl}" />`;
