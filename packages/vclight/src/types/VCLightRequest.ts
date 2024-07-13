@@ -73,14 +73,21 @@ export default class VCLightRequest implements VCLightRequestBase {
 
     static async fromNetlify(request: Request, context: Context): Promise<VCLightRequest> {
         const headers: IncomingHttpHeaders = {};
+        for (const [key, value] of request.headers.entries()) {
+            headers[key.toLowerCase()] = value;
+        }
         let body;
         try {
             body = await request.text();
         } catch {
             body = null;
         }
-        for (const [key, value] of request.headers.entries()) {
-            headers[key.toLowerCase()] = value;
+        if (typeof body == "string" && headers["content-type"] == "application/json") {
+            try {
+                body = JSON.parse(body);
+            } catch {
+                body = null;
+            }
         }
         return new VCLightRequest({
             ...request,
