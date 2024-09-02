@@ -52,6 +52,9 @@ importers:
         specifier: ^1.8.1
         version: 1.8.1
     devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20240821.1
+        version: 4.20240821.1
       '@netlify/functions':
         specifier: ^2.7.0
         version: 2.7.0(@opentelemetry/api@1.8.0)
@@ -111,6 +114,9 @@ importers:
         version: 5.4.1
 
 packages:
+
+  '@cloudflare/workers-types@4.20240821.1':
+    resolution: {integrity: sha512-icAkbnAqgVl6ef9lgLTom8na+kj2RBw2ViPAQ586hbdj0xZcnrjK7P46Eu08OU9D/lNDgN2sKU/sxhe2iK/gIg==}
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -1547,6 +1553,8 @@ packages:
     engines: {node: '>=6'}
 
 snapshots:
+
+  '@cloudflare/workers-types@4.20240821.1': {}
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:

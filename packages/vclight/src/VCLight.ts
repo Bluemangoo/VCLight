@@ -5,6 +5,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import { Context } from "@netlify/functions";
 import VCLightRequest from "./types/VCLightRequest";
 import VCLightApp from "./types/VCLightApp";
+import { ExecutionContext } from "@cloudflare/workers-types";
 
 export default class VCLight implements VCLightApp {
     constructor(config: any = {}) {
@@ -85,7 +86,7 @@ export default class VCLight implements VCLightApp {
         return response;
     }
 
-    private sendServerResponse(rawResponse: ServerResponse, vcLightResponse: VCLightResponse) {
+    protected sendServerResponse(rawResponse: ServerResponse, vcLightResponse: VCLightResponse) {
         for (const header in vcLightResponse.headers) {
             if (vcLightResponse.headers[header] == null) {
                 rawResponse.removeHeader(header);
@@ -95,6 +96,36 @@ export default class VCLight implements VCLightApp {
         }
         rawResponse.statusCode = vcLightResponse.status;
         rawResponse.end(vcLightResponse.response);
+    }
+
+    protected getResponse(vcLightResponse: VCLightResponse): Response {
+        let response = new Response(vcLightResponse.response, {
+            status: vcLightResponse.status
+        });
+        for (const key in vcLightResponse.headers) {
+            if (vcLightResponse.headers[key] == null) {
+                continue;
+            }
+            let value = "";
+            let v = vcLightResponse.headers[key];
+            const k = key.split("-").map(segment => {
+                return segment.charAt(0).toUpperCase() + segment.slice(1);
+            }).join("-");
+            if (v == null) {
+                response.headers.delete(k);
+            } else {
+                if (typeof v == "number") {
+                    value = v.toString();
+                } else if (Array.isArray(v)) {
+                    value = v.join(", ");
+                } else {
+                    value = (v || "").toString();
+                }
+                response.headers.set(k, value);
+            }
+        }
+
+        return response;
     }
 
     public httpHandler(): (request: IncomingMessage, response: ServerResponse) => Promise<void> {
@@ -117,34 +148,15 @@ export default class VCLight implements VCLightApp {
         const that = this;
         return async (request: Request, context: Context): Promise<Response> => {
             const vcLightResponse = await that.fetch(await VCLightRequest.fromNetlify(request, context));
+            return that.getResponse(vcLightResponse);
+        };
+    }
 
-            let response = new Response(vcLightResponse.response, {
-                status: vcLightResponse.status
-            });
-            for (const key in vcLightResponse.headers) {
-                if (vcLightResponse.headers[key] == null) {
-                    continue;
-                }
-                let value = "";
-                let v = vcLightResponse.headers[key];
-                const k = key.split("-").map(segment => {
-                    return segment.charAt(0).toUpperCase() + segment.slice(1);
-                }).join("-");
-                if (v == null) {
-                    response.headers.delete(k);
-                } else {
-                    if (typeof v == "number") {
-                        value = v.toString();
-                    } else if (Array.isArray(v)) {
-                        value = v.join(", ");
-                    } else {
-                        value = (v || "").toString();
-                    }
-                    response.headers.set(k, value);
-                }
-            }
-
-            return response;
+    public cloudflareHandler(): (request: Request, env: any, ctx: ExecutionContext) => Promise<Response> {
+        const that = this;
+        return async (request: Request, env: any, ctx: ExecutionContext): Promise<Response> => {
+            const vcLightResponse = await that.fetch(await VCLightRequest.fromCloudflare(request, env, ctx));
+            return that.getResponse(vcLightResponse);
         };
     }
 }

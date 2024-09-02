@@ -1,6 +1,7 @@
 import { IncomingMessage, ServerResponse } from "http";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { Context } from "@netlify/functions";
+import { ExecutionContext } from "@cloudflare/workers-types";
 
 export class RawHttpRequest {
     public request: IncomingMessage;
@@ -32,4 +33,16 @@ export class RawNetlifyRequest {
     }
 }
 
-export type RawRequest = RawHttpRequest | RawVercelRequest | RawNetlifyRequest;
+export class RawCloudflareRequest {
+    public request: Request;
+    public env: any;
+    public ctx: ExecutionContext;
+
+    constructor(request: Request, env: any, ctx: ExecutionContext) {
+        this.request = request;
+        this.env = env;
+        this.ctx = ctx;
+    }
+}
+
+export type RawRequest = RawHttpRequest | RawVercelRequest | RawNetlifyRequest | RawCloudflareRequest;

@@ -1,6 +1,6 @@
 {
   "name": "vclight",
-  "version": "3.2.0",
+  "version": "3.3.0-beta.0",
   "description": "A framework for vercel serverless app",
   "author": "Bluemangoo",
   "license": "MIT",
@@ -21,6 +21,7 @@
     "build:esm": "tsc -p tsconfig.esm.json && gulp post-esm-build"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240821.1",
     "@netlify/functions": "^2.7.0",
     "@netlify/serverless-functions-api": "^1.22.0",
     "@types/content-type": "^1.1.8",
