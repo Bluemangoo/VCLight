@@ -1,10 +1,12 @@
 {
   "name": "@vclight/router",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Router for VCLight",
   "author": "Bluemangoo",
   "license": "MIT",
-  "main": "./dist/index.js",
+  "main": "./dist/index",
+  "types": "./dist/index.d.ts",
+  "module": "./dist/index.mjs",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bluemangoo/VCLight.git"
@@ -14,12 +16,15 @@
     "vercel"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "pnpm run build:esm && pnpm run build:cjs",
+    "build:cjs": "tsc",
+    "build:esm": "tsc -p tsconfig.esm.json && gulp post-esm-build"
   },
   "devDependencies": {
     "@types/cookie": "^0.6.0",
     "@types/node": "^20.12.7",
     "@vercel/node": "^3.0.27",
+    "gulp": "^5.0.0",
     "typescript": "^5.4.5"
   },
   "dependencies": {

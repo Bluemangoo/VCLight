@@ -3,8 +3,8 @@ import { PassThrough } from "stream";
 import { parse as parseURL } from "url";
 import { parse as parseContentType } from "content-type";
 import { parse as parseQS } from "querystring";
-import etag = require("etag");
-import endOfStream = require("end-of-stream");
+import * as etag from "etag";
+import * as endOfStream from "end-of-stream";
 
 type VercelRequestCookies = { [key: string]: string };
 type VercelRequestQuery = { [key: string]: string | string[] };

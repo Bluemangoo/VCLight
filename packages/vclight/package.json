@@ -1,10 +1,12 @@
 {
   "name": "vclight",
-  "version": "3.1.2",
+  "version": "3.2.0",
   "description": "A framework for vercel serverless app",
   "author": "Bluemangoo",
   "license": "MIT",
-  "main": "./dist/index.js",
+  "main": "./dist/index",
+  "types": "./dist/index.d.ts",
+  "module": "./dist/index.mjs",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Bluemangoo/VCLight.git"
@@ -14,7 +16,9 @@
     "vercel"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "pnpm run build:esm && pnpm run build:cjs",
+    "build:cjs": "tsc",
+    "build:esm": "tsc -p tsconfig.esm.json && gulp post-esm-build"
   },
   "devDependencies": {
     "@netlify/functions": "^2.7.0",
@@ -25,6 +29,7 @@
     "@types/etag": "^1.8.3",
     "@types/node": "^20.12.7",
     "@vercel/node": "^3.0.27",
+    "gulp": "^5.0.0",
     "typescript": "^5.4.5"
   },
   "dependencies": {

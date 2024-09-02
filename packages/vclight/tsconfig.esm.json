@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "ES2021",
+    "sourceMap": false,
+    "declaration": true,
+    "strict": true,
+    "outDir": "./dist",
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "Node"
+  },
+  "exclude": [
+    "./dist"
+  ]
+}
