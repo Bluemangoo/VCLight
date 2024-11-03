@@ -6,23 +6,14 @@ import { Context } from "@netlify/functions";
 import VCLightRequest from "./types/VCLightRequest";
 import VCLightApp from "./types/VCLightApp";
 import { ExecutionContext } from "@cloudflare/workers-types";
+import { mergeConfig, VCLightConfig, VCLightInnerConfig } from "./types/VCLightConfig";
 
 export default class VCLight implements VCLightApp {
-    constructor(config: any = {}) {
-        this.config = this.mergeConfig(config);
+    constructor(config: VCLightConfig = {}) {
+        this.config = mergeConfig(config);
     }
 
-    readonly config: {
-        useBuilder: boolean;
-    };
-
-    mergeConfig(config: any) {
-        const defaultConfig = {
-            useBuilder: false
-        };
-
-        return { ...defaultConfig, ...config };
-    }
+    readonly config: VCLightInnerConfig;
 
     middlewares: VCLightMiddleware[] = [];
 
@@ -32,18 +23,28 @@ export default class VCLight implements VCLightApp {
 
     protected async fetch(request: VCLightRequest): Promise<VCLightResponse> {
         let response: VCLightResponse = new VCLightResponse();
-        const posts: VCLightMiddleware[] = [];
+        try {
+            const posts: VCLightMiddleware[] = [];
 
-        for (const middleware of this.middlewares) {
-            posts.push(middleware);
-            await middleware.process(request, response, this);
-            if (response.end) {
-                break;
+            for (const middleware of this.middlewares) {
+                posts.push(middleware);
+                await middleware.process(request, response, this);
+                if (response.end) {
+                    break;
+                }
             }
-        }
 
-        for (const middleware of posts.reverse()) {
-            await middleware.post(request, response, this);
+            for (const middleware of posts.reverse()) {
+                await middleware.post(request, response, this);
+            }
+        } catch (e) {
+            if (this.config.onError) {
+                response = new VCLightResponse();
+                await this.config.onError(request, response, this, e);
+                return response;
+            } else {
+                throw e;
+            }
         }
 
         if (response.redirect && (response.status < 300 || response.status >= 400)) {
@@ -131,8 +132,14 @@ export default class VCLight implements VCLightApp {
     public httpHandler(): (request: IncomingMessage, response: ServerResponse) => Promise<void> {
         const that = this;
         return async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
-            const res = await that.fetch(await VCLightRequest.fromHttp(request, response));
-            that.sendServerResponse(response, res);
+            try {
+                const res = await that.fetch(await VCLightRequest.fromHttp(request, response));
+                that.sendServerResponse(response, res);
+            } catch (e) {
+                console.error(e);
+                response.statusCode = 500;
+                response.end();
+            }
         };
     }
 
