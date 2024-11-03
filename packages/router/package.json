@@ -11,6 +11,11 @@
     "type": "git",
     "url": "git+https://github.com/bluemangoo/VCLight.git"
   },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist/*"
+  ],
   "keywords": [
     "typescript",
     "vercel"

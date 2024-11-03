@@ -10,6 +10,13 @@
     "type": "git",
     "url": "git+https://github.com/bluemangoo/VCLight.git"
   },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "bin/*",
+    "files/*",
+    "lib/*"
+  ],
   "directories": {
     "lib": "./lib",
     "bin": "./bin"
