@@ -1,6 +1,6 @@
 {
   "name": "vclight",
-  "version": "3.3.0-beta.0",
+  "version": "3.3.1",
   "description": "A framework for vercel serverless app",
   "author": "Bluemangoo",
   "license": "MIT",
@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "content-type": "^1.0.5",
-    "cookie": "^0.6.0",
+    "cookie": "0.7.0",
     "end-of-stream": "^1.4.4",
     "etag": "^1.8.1"
   }
