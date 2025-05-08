@@ -42,7 +42,7 @@ export default class VCLightRequest implements VCLightRequestBase {
             const contentType = request.headers["content-type"];
             const b =
                 contentType == undefined ? Buffer.from("") : await readBody(request);
-            body = getBodyParser(b, contentType);
+            body = getBodyParser(b, contentType)();
         } catch {
             body = null;
         }
