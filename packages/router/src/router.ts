@@ -48,7 +48,7 @@ export default class VCLightRouter implements VCLightMiddleware {
      * @param event the event.
      * @param fn
      */
-    public on(event: string, fn: (data: RequestContext, response: ResponseContext) => void) {
+    public on(event: string, fn: (data: RequestContext, response: ResponseContext) => Promise<void>) {
         if (this.events[event]) {
             console.warn(`Warning: event ${event} have been redefined`);
         }
@@ -93,7 +93,7 @@ export default class VCLightRouter implements VCLightMiddleware {
     }
 
     protected events: {
-        [key: string]: any;
+        [key: string]: (data: RequestContext, response: ResponseContext) => Promise<void>;
     } = {};
     protected eventPatterns: Pattern[] = [];
 
