@@ -3,7 +3,7 @@
   "private": true,
   "description": "VCLight monorepo pnpm workspace.",
   "devDependencies": {
-    "prettier": "^3.2.5"
+    "prettier": "^3.8.1"
   },
   "scripts": {
     "build:vclight": "pnpm -C packages/vclight build",

@@ -1,10 +1,9 @@
 import type { ServerResponse, IncomingMessage } from "http";
 import { PassThrough } from "stream";
-import { parse as parseURL } from "url";
 import { parse as parseContentType } from "content-type";
 import { parse as parseQS } from "querystring";
-import * as etag from "etag";
-import * as endOfStream from "end-of-stream";
+import etag from "etag";
+import endOfStream from "end-of-stream";
 
 type VercelRequestCookies = { [key: string]: string };
 type VercelRequestQuery = { [key: string]: string | string[] };
@@ -17,10 +16,11 @@ export type VercelRequest = IncomingMessage & {
 };
 
 export type VercelResponse = ServerResponse & {
-    send: (body: any) => VercelResponse;
-    json: (jsonBody: any) => VercelResponse;
-    status: (statusCode: number) => VercelResponse;
-    redirect: (statusOrUrl: string | number, url?: string) => VercelResponse;
+    send(body: any): VercelResponse;
+    json(jsonBody: any): VercelResponse;
+    status(statusCode: number): VercelResponse;
+    redirect(url: string): VercelResponse;
+    redirect(status: number, url: string): VercelResponse;
 };
 
 class ApiError extends Error {
@@ -70,7 +70,23 @@ export function getBodyParser(body: Buffer, contentType: string | undefined) {
 
 function getQueryParser({ url = "/" }: IncomingMessage) {
     return function parseQuery(): VercelRequestQuery {
-        return parseURL(url, true).query as VercelRequestQuery;
+        const base = "http://localhost";
+        const { searchParams } = new URL(url, base);
+        const query: Record<string, any> = {};
+
+        searchParams.forEach((value, key) => {
+            if (Object.hasOwn(query, key)) {
+                if (Array.isArray(query[key])) {
+                    query[key].push(value);
+                } else {
+                    query[key] = [query[key], value];
+                }
+            } else {
+                query[key] = value;
+            }
+        });
+
+        return query as VercelRequestQuery;
     };
 }
 
@@ -95,16 +111,14 @@ function setCharset(type: string, charset: string) {
     return format(parsed);
 }
 
-function redirect(
-    res: VercelResponse,
-    statusOrUrl: string | number,
-    url?: string
-): VercelResponse {
+function redirect(res: VercelResponse, url: string): VercelResponse;
+function redirect(res: VercelResponse, status: number, url: string): VercelResponse;
+function redirect(res: VercelResponse, statusOrUrl: string | number, url?: string): VercelResponse {
     if (typeof statusOrUrl === "string") {
         url = statusOrUrl;
         statusOrUrl = 307;
     }
-    if (typeof statusOrUrl !== "number" || typeof url !== "string") {
+    if (typeof url !== "string") {
         throw new Error(
             `Invalid redirect arguments. Please use a single argument URL, e.g. res.redirect('/destination') or use a status code and URL, e.g. res.redirect(307, '/destination').`
         );
@@ -125,7 +139,7 @@ function setLazyProp<T>(req: IncomingMessage, prop: string, getter: () => T) {
             Object.defineProperty(req, prop, { ...optsReset, value });
             return value;
         },
-        set: value => {
+        set: (value) => {
             Object.defineProperty(req, prop, { ...optsReset, value });
         }
     });
@@ -136,11 +150,7 @@ function createETag(body: any, encoding: "utf8" | undefined) {
     return etag(buf, { weak: true });
 }
 
-function json(
-    req: VercelRequest,
-    res: VercelResponse,
-    jsonBody: any
-): VercelResponse {
+function json(req: VercelRequest, res: VercelResponse, jsonBody: any): VercelResponse {
     const body = JSON.stringify(jsonBody);
     if (!res.getHeader("content-type")) {
         res.setHeader("content-type", "application/json; charset=utf-8");
@@ -148,11 +158,7 @@ function json(
     return send(req, res, body);
 }
 
-function send(
-    req: VercelRequest,
-    res: VercelResponse,
-    body: any
-): VercelResponse {
+function send(req: VercelRequest, res: VercelResponse, body: any): VercelResponse {
     let chunk: unknown = body;
     let encoding: "utf8" | undefined;
 
@@ -219,11 +225,7 @@ function send(
 
     // populate ETag
     let etag: string | undefined;
-    if (
-        !res.getHeader("etag") &&
-        len !== undefined &&
-        (etag = createETag(chunk, encoding))
-    ) {
+    if (!res.getHeader("etag") && len !== undefined && (etag = createETag(chunk, encoding))) {
         res.setHeader("etag", etag);
     }
 
@@ -254,8 +256,8 @@ function restoreBody(req: IncomingMessage, body: Buffer) {
     const on = replicateBody.on.bind(replicateBody);
     const originalOn = req.on.bind(req);
     req.read = replicateBody.read.bind(replicateBody);
-    req.on = req.addListener = (name, cb) =>
-        // @ts-expect-error
+    // @ts-expect-error
+    req.on = req.addListener = (name: string | symbol, cb: (...args: any[]) => void) =>
         name === "data" || name === "end" ? on(name, cb) : originalOn(name, cb);
     replicateBody.write(body);
     replicateBody.end();
@@ -267,9 +269,7 @@ export async function readBody(req: IncomingMessage) {
     return body;
 }
 
-async function serializeBody(
-    request: IncomingMessage
-): Promise<Buffer | undefined> {
+async function serializeBody(request: IncomingMessage): Promise<Buffer | undefined> {
     return request.method !== "GET" && request.method !== "HEAD"
         ? await streamToBuffer(request)
         : undefined;
@@ -305,12 +305,12 @@ export async function addHelpers(_req: IncomingMessage, _res: ServerResponse) {
     setLazyProp<VercelRequestCookies>(req, "cookies", getCookieParser(req));
     setLazyProp<VercelRequestQuery>(req, "query", getQueryParser(req));
     const contentType = req.headers["content-type"];
-    const body =
-        contentType == undefined ? Buffer.from("") : await readBody(req);
+    const body = contentType == undefined ? Buffer.from("") : await readBody(req);
     setLazyProp<VercelRequestBody>(req, "body", getBodyParser(body, contentType));
 
-    res.status = statusCode => status(res, statusCode);
-    res.redirect = (statusOrUrl, url) => redirect(res, statusOrUrl, url);
-    res.send = body => send(req, res, body);
-    res.json = jsonBody => json(req, res, jsonBody);
+    res.status = (statusCode) => status(res, statusCode);
+    res.redirect = (statusOrUrl: string | number, url?: string) =>
+        (redirect as any)(res, statusOrUrl, url);
+    res.send = (body) => send(req, res, body);
+    res.json = (jsonBody) => json(req, res, jsonBody);
 }

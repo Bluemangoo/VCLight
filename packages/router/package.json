@@ -1,6 +1,6 @@
 {
   "name": "@vclight/router",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "Router for VCLight",
   "author": "Bluemangoo",
   "license": "MIT",
@@ -27,10 +27,9 @@
   },
   "devDependencies": {
     "@types/cookie": "^0.6.0",
-    "@types/node": "^20.12.7",
-    "@vercel/node": "^3.0.27",
-    "gulp": "^5.0.0",
-    "typescript": "^5.4.5"
+    "@types/node": "^25.5.0",
+    "gulp": "^5.0.1",
+    "typescript": "^6.0.2"
   },
   "dependencies": {
     "cookie": "0.7.0",

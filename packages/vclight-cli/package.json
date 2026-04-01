@@ -1,41 +1,44 @@
 {
-  "name": "@vclight/cli",
-  "version": "1.0.18",
-  "description": "",
-  "main": "index.js",
-  "bin": {
-    "vclight": "bin/vclight.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bluemangoo/VCLight.git"
-  },
-  "files": [
-    "LICENSE",
-    "README.md",
-    "bin/*",
-    "files/*",
-    "lib/*"
-  ],
-  "directories": {
-    "lib": "./lib",
-    "bin": "./bin"
-  },
-  "keywords": [
-    "vercel",
-    "netlify",
-    "http-server"
-  ],
-  "author": "Bluemangoo",
-  "license": "MIT",
-  "dependencies": {
-    "chalk": "^4.1.2",
-    "commander": "^10.0.0",
-    "ejs": "^3.1.9",
-    "execa": "^5.1.1",
-    "inquirer": "^8.2.5",
-    "log-symbols": "^4.1.0",
-    "minimist": "^1.2.8",
-    "ora": "^5.4.1"
-  }
+    "name": "@vclight/cli",
+    "version": "1.0.18",
+    "description": "",
+    "main": "index.js",
+    "bin": {
+        "vclight": "bin/vclight.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bluemangoo/VCLight.git"
+    },
+    "files": [
+        "LICENSE",
+        "README.md",
+        "bin/*",
+        "files/*",
+        "lib/*"
+    ],
+    "directories": {
+        "lib": "./lib",
+        "bin": "./bin"
+    },
+    "keywords": [
+        "vercel",
+        "netlify",
+        "http-server"
+    ],
+    "author": "Bluemangoo",
+    "license": "MIT",
+    "dependencies": {
+        "chalk": "^4.1.2",
+        "commander": "^10.0.0",
+        "ejs": "^3.1.9",
+        "execa": "^5.1.1",
+        "inquirer": "^8.2.5",
+        "log-symbols": "^4.1.0",
+        "minimist": "^1.2.8",
+        "ora": "^5.4.1"
+    },
+    "devDependencies": {
+        "@types/node": "^25.5.0"
+    }
 }
