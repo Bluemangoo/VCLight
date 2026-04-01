@@ -1,6 +1,6 @@
 {
     "name": "vclight",
-    "version": "3.4.1",
+    "version": "3.4.2",
     "description": "A framework for serverless app",
     "author": "Bluemangoo",
     "license": "MIT",
@@ -21,7 +21,7 @@
         "vercel"
     ],
     "scripts": {
-        "build": "pnpm run build:esm && pnpm run build:cjs",
+        "build": "pnpm run build:esm && pnpm run build:cjs && gulp post-dts-build",
         "build:cjs": "tsc",
         "build:esm": "tsc -p tsconfig.esm.json && gulp post-esm-build"
     },
@@ -34,12 +34,12 @@
         "@types/end-of-stream": "^1.4.4",
         "@types/etag": "^1.8.4",
         "@types/node": "^25.5.0",
+        "@vercel/functions": "^3.4.3",
         "@vercel/node": "^5.6.23",
         "gulp": "^5.0.1",
         "typescript": "^6.0.2"
     },
     "dependencies": {
-        "@vercel/functions": "^3.4.3",
         "content-type": "^1.0.5",
         "cookie": "0.7.0",
         "end-of-stream": "^1.4.5",

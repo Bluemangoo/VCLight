@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "nodenext",
+        "module": "esnext",
         "target": "ES2021",
         "lib": ["ES2024", "WebWorker"],
         "sourceMap": false,
@@ -9,7 +9,7 @@
         "rootDir": "src",
         "outDir": "./dist",
         "allowSyntheticDefaultImports": true,
-        "moduleResolution": "nodenext"
+        "moduleResolution": "bundler"
     },
     "exclude": ["./dist"]
 }
