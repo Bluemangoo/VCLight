@@ -69,7 +69,7 @@ export default class VCLight implements VCLightApp {
             response.response = "";
         }
 
-        let chunk = this.config.useBuilder ? response.builder?.get() : response.response;
+        let chunk = response.response;
         if (chunk == null) {
             chunk = "";
         } else if (typeof chunk == "object") {
@@ -109,9 +109,12 @@ export default class VCLight implements VCLightApp {
             }
             let value = "";
             let v = vcLightResponse.headers[key];
-            const k = key.split("-").map(segment => {
-                return segment.charAt(0).toUpperCase() + segment.slice(1);
-            }).join("-");
+            const k = key
+                .split("-")
+                .map((segment) => {
+                    return segment.charAt(0).toUpperCase() + segment.slice(1);
+                })
+                .join("-");
             if (v == null) {
                 response.headers.delete(k);
             } else {
@@ -154,15 +157,23 @@ export default class VCLight implements VCLightApp {
     public netlifyHandler(): (request: Request, context: Context) => Promise<Response> {
         const that = this;
         return async (request: Request, context: Context): Promise<Response> => {
-            const vcLightResponse = await that.fetch(await VCLightRequest.fromNetlify(request, context));
+            const vcLightResponse = await that.fetch(
+                await VCLightRequest.fromNetlify(request, context)
+            );
             return that.getResponse(vcLightResponse);
         };
     }
 
-    public cloudflareHandler(): (request: Request, env: any, ctx: ExecutionContext) => Promise<Response> {
+    public cloudflareHandler(): (
+        request: Request,
+        env: any,
+        ctx: ExecutionContext
+    ) => Promise<Response> {
         const that = this;
         return async (request: Request, env: any, ctx: ExecutionContext): Promise<Response> => {
-            const vcLightResponse = await that.fetch(await VCLightRequest.fromCloudflare(request, env, ctx));
+            const vcLightResponse = await that.fetch(
+                await VCLightRequest.fromCloudflare(request, env, ctx)
+            );
             return that.getResponse(vcLightResponse);
         };
     }

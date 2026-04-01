@@ -5,9 +5,8 @@ import { Context } from "@netlify/functions";
 import { ExecutionContext } from "@cloudflare/workers-types";
 
 export default interface VCLightApp {
-    config: {
-        useBuilder: boolean;
-    };
+    config: {};
+
     middlewares: VCLightMiddleware[];
 
     use(plugin: VCLightMiddleware): void;
