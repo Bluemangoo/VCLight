@@ -1,10 +1,7 @@
 import VCLightMiddleware from "./VCLightMiddleware";
 import { IncomingMessage, ServerResponse } from "http";
-// @ts-ignore
 import { VercelRequest, VercelResponse } from "@vercel/node";
-// @ts-ignore
 import { Context } from "@netlify/functions";
-// @ts-ignore
 import { ExecutionContext } from "@cloudflare/workers-types";
 
 export default interface VCLightApp {

@@ -1,10 +1,20 @@
 import { IncomingMessage, ServerResponse } from "http";
-// @ts-ignore
 import { VercelRequest, VercelResponse } from "@vercel/node";
-// @ts-ignore
 import { Context } from "@netlify/functions";
-// @ts-ignore
 import { ExecutionContext } from "@cloudflare/workers-types";
+import type {
+    waitUntil,
+    getEnv,
+    geolocation,
+    ipAddress,
+    invalidateByTag,
+    dangerouslyDeleteByTag,
+    invalidateBySrcImage,
+    dangerouslyDeleteBySrcImage,
+    addCacheTag,
+    getCache,
+    attachDatabasePool
+} from "@vercel/functions";
 
 export class RawHttpRequest {
     public request: IncomingMessage;
@@ -26,11 +36,27 @@ export class RawVercelRequest {
     }
 }
 
+type VercelFunctionHelper = {
+        waitUntil: typeof waitUntil;
+        getEnv: typeof getEnv;
+        geolocation: typeof geolocation;
+        ipAddress: typeof ipAddress;
+        invalidateByTag: typeof invalidateByTag;
+        dangerouslyDeleteByTag: typeof dangerouslyDeleteByTag;
+        invalidateBySrcImage: typeof invalidateBySrcImage;
+        dangerouslyDeleteBySrcImage: typeof dangerouslyDeleteBySrcImage;
+        addCacheTag: typeof addCacheTag;
+        getCache: typeof getCache;
+        attachDatabasePool: typeof attachDatabasePool;
+    }
+
 export class RawVercelFunctionRequest {
     public request: Request;
+    public helpers: VercelFunctionHelper;
 
-    constructor(request: Request) {
+    constructor(request: Request, helpers: VercelFunctionHelper) {
         this.request = request;
+        this.helpers = helpers;
     }
 }
 

@@ -7,4 +7,5 @@ export { default as VCLightRequest } from "./types/VCLightRequest";
 export { default as VCLightResponse } from "./types/VCLightResponse";
 export { default as VCLightApp } from "./types/VCLightApp";
 export { VCLightConfig } from "./types/VCLightConfig";
+export { waitUntil } from "./helper/jobs";
 export * from "./types/rawRequest";

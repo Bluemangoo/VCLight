@@ -1,15 +1,15 @@
 import VCLightMiddleware from "./types/VCLightMiddleware";
 import VCLightResponse from "./types/VCLightResponse";
-// @ts-ignore
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { IncomingMessage, ServerResponse } from "http";
-// @ts-ignore
 import { Context as NetlifyContext } from "@netlify/functions";
 import VCLightRequest from "./types/VCLightRequest";
 import VCLightApp from "./types/VCLightApp";
-// @ts-ignore
 import { ExecutionContext } from "@cloudflare/workers-types";
 import { mergeConfig, VCLightConfig, VCLightInnerConfig } from "./types/VCLightConfig";
+import { consumeWaitUntil } from "./helper/jobs";
+import type { waitUntil as waitUntilVF } from "@vercel/functions";
+import { importFrom } from "./helper/module";
 
 export default class VCLight implements VCLightApp {
     constructor(config: VCLightConfig = {}) {
@@ -146,6 +146,7 @@ export default class VCLight implements VCLightApp {
                 response.statusCode = 500;
                 response.end();
             }
+            await consumeWaitUntil();
         };
     }
 
@@ -154,6 +155,7 @@ export default class VCLight implements VCLightApp {
         return async (request: VercelRequest, response: VercelResponse): Promise<void> => {
             const res = await that.fetch(await VCLightRequest.fromVercel(request, response));
             that.sendServerResponse(response, res);
+            await consumeWaitUntil();
         };
     }
 
@@ -163,6 +165,11 @@ export default class VCLight implements VCLightApp {
             const vcLightResponse = await that.fetch(
                 await VCLightRequest.fromVercelFunction(request)
             );
+            const waitUntil = await importFrom<typeof waitUntilVF>(
+                "@vercel/functions",
+                "waitUntil"
+            );
+            await consumeWaitUntil(waitUntil);
             return that.getResponse(vcLightResponse);
         };
     }
@@ -173,6 +180,7 @@ export default class VCLight implements VCLightApp {
             const vcLightResponse = await that.fetch(
                 await VCLightRequest.fromNetlify(request, context)
             );
+            await consumeWaitUntil((t) => context.waitUntil(t));
             return that.getResponse(vcLightResponse);
         };
     }
@@ -187,6 +195,7 @@ export default class VCLight implements VCLightApp {
             const vcLightResponse = await that.fetch(
                 await VCLightRequest.fromCloudflare(request, env, ctx)
             );
+            await consumeWaitUntil((t) => ctx.waitUntil(t));
             return that.getResponse(vcLightResponse);
         };
     }

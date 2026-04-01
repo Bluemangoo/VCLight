@@ -7,15 +7,24 @@ import {
     RawVercelRequest
 } from "./rawRequest";
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from "http";
-// @ts-ignore
 import { VercelRequest, VercelResponse } from "@vercel/node";
-// @ts-ignore
 import { Context } from "@netlify/functions";
 import { getBodyParser, readBody } from "../helper/helpers";
-// @ts-ignore
 import { ExecutionContext } from "@cloudflare/workers-types";
-// @ts-ignore
-import { getEnv } from "@vercel/functions";
+import type {
+    waitUntil as waitUntilT,
+    getEnv as getEnvT,
+    geolocation as geolocationT,
+    ipAddress as ipAddressT,
+    invalidateByTag as invalidateByTagT,
+    dangerouslyDeleteByTag as dangerouslyDeleteByTagT,
+    invalidateBySrcImage as invalidateBySrcImageT,
+    dangerouslyDeleteBySrcImage as dangerouslyDeleteBySrcImageT,
+    addCacheTag as addCacheTagT,
+    getCache as getCacheT,
+    attachDatabasePool as attachDatabasePoolT
+} from "@vercel/functions";
+import { importFrom } from "../helper/module";
 
 export interface VCLightRequestBase {
     rawRequest: RawRequest;
@@ -112,15 +121,55 @@ export default class VCLightRequest implements VCLightRequestBase {
                 body = null;
             }
         }
+        const i: {
+            waitUntil: typeof waitUntilT;
+            getEnv: typeof getEnvT;
+            geolocation: typeof geolocationT;
+            ipAddress: typeof ipAddressT;
+            invalidateByTag: typeof invalidateByTagT;
+            dangerouslyDeleteByTag: typeof dangerouslyDeleteByTagT;
+            invalidateBySrcImage: typeof invalidateBySrcImageT;
+            dangerouslyDeleteBySrcImage: typeof dangerouslyDeleteBySrcImageT;
+            addCacheTag: typeof addCacheTagT;
+            getCache: typeof getCacheT;
+            attachDatabasePool: typeof attachDatabasePoolT;
+        } = await importFrom("@vercel/functions");
+        const {
+            waitUntil,
+            getEnv,
+            geolocation,
+            ipAddress,
+            invalidateByTag,
+            dangerouslyDeleteByTag,
+            invalidateBySrcImage,
+            dangerouslyDeleteBySrcImage,
+            addCacheTag,
+            getCache,
+            attachDatabasePool
+        } = i;
+        const helpers = {
+            waitUntil,
+            getEnv,
+            geolocation,
+            ipAddress,
+            invalidateByTag,
+            dangerouslyDeleteByTag,
+            invalidateBySrcImage,
+            dangerouslyDeleteBySrcImage,
+            addCacheTag,
+            getCache,
+            attachDatabasePool
+        };
+
         return new VCLightRequest({
             ...request,
-            rawRequest: new RawVercelFunctionRequest(request),
+            rawRequest: new RawVercelFunctionRequest(request, helpers),
             source: "vercel-function",
             url: new URL(request.url).pathname,
             method: request.method,
             headers,
             body,
-            env: getEnv()
+            env: (await importFrom<typeof getEnv>("@vercel/functions", "getEnv"))()
         });
     }
 
