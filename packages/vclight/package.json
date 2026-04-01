@@ -39,6 +39,7 @@
         "typescript": "^6.0.2"
     },
     "dependencies": {
+        "@vercel/functions": "^3.4.3",
         "content-type": "^1.0.5",
         "cookie": "0.7.0",
         "end-of-stream": "^1.4.5",

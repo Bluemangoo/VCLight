@@ -1,23 +1,35 @@
-import { RawCloudflareRequest, RawHttpRequest, RawNetlifyRequest, RawRequest, RawVercelRequest } from "./rawRequest";
+import {
+    RawCloudflareRequest,
+    RawHttpRequest,
+    RawNetlifyRequest,
+    RawRequest,
+    RawVercelFunctionRequest,
+    RawVercelRequest
+} from "./rawRequest";
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from "http";
+// @ts-ignore
 import { VercelRequest, VercelResponse } from "@vercel/node";
+// @ts-ignore
 import { Context } from "@netlify/functions";
 import { getBodyParser, readBody } from "../helper/helpers";
+// @ts-ignore
 import { ExecutionContext } from "@cloudflare/workers-types";
+// @ts-ignore
+import { getEnv } from "@vercel/functions";
 
 export interface VCLightRequestBase {
-    rawRequest: RawRequest,
-    source: "http" | "vercel" | "netlify" | "cloudflare",
-    headers: IncomingHttpHeaders,
-    method: string,
-    url: string,
-    body: any,
-    env: any
+    rawRequest: RawRequest;
+    source: "http" | "vercel" | "vercel-function" | "netlify" | "cloudflare";
+    headers: IncomingHttpHeaders;
+    method: string;
+    url: string;
+    body: any;
+    env: any;
 }
 
 export default class VCLightRequest implements VCLightRequestBase {
     readonly rawRequest: RawRequest;
-    readonly source: "http" | "vercel" | "netlify" | "cloudflare";
+    readonly source: "http" | "vercel" | "vercel-function" | "netlify" | "cloudflare";
 
     readonly headers: IncomingHttpHeaders;
     readonly method: string;
@@ -36,12 +48,14 @@ export default class VCLightRequest implements VCLightRequestBase {
         this.env = context.env;
     }
 
-    static async fromHttp(request: IncomingMessage, response: ServerResponse): Promise<VCLightRequest> {
+    static async fromHttp(
+        request: IncomingMessage,
+        response: ServerResponse
+    ): Promise<VCLightRequest> {
         let body;
         try {
             const contentType = request.headers["content-type"];
-            const b =
-                contentType == undefined ? Buffer.from("") : await readBody(request);
+            const b = contentType == undefined ? Buffer.from("") : await readBody(request);
             body = getBodyParser(b, contentType)();
         } catch {
             body = null;
@@ -58,7 +72,10 @@ export default class VCLightRequest implements VCLightRequestBase {
         });
     }
 
-    static async fromVercel(request: VercelRequest, response: VercelResponse): Promise<VCLightRequest> {
+    static async fromVercel(
+        request: VercelRequest,
+        response: VercelResponse
+    ): Promise<VCLightRequest> {
         let body;
         try {
             body = await request.body;
@@ -74,6 +91,36 @@ export default class VCLightRequest implements VCLightRequestBase {
             headers: request.headers,
             body,
             env: process.env
+        });
+    }
+
+    static async fromVercelFunction(request: Request): Promise<VCLightRequest> {
+        const headers: IncomingHttpHeaders = {};
+        for (const [key, value] of request.headers.entries()) {
+            headers[key.toLowerCase()] = value;
+        }
+        let body;
+        try {
+            body = await request.text();
+        } catch {
+            body = null;
+        }
+        if (typeof body == "string" && headers["content-type"] == "application/json") {
+            try {
+                body = JSON.parse(body);
+            } catch {
+                body = null;
+            }
+        }
+        return new VCLightRequest({
+            ...request,
+            rawRequest: new RawVercelFunctionRequest(request),
+            source: "vercel-function",
+            url: new URL(request.url).pathname,
+            method: request.method,
+            headers,
+            body,
+            env: getEnv()
         });
     }
 
@@ -107,7 +154,11 @@ export default class VCLightRequest implements VCLightRequestBase {
         });
     }
 
-    static async fromCloudflare(request: Request, env: any, ctx: ExecutionContext): Promise<VCLightRequest> {
+    static async fromCloudflare(
+        request: Request,
+        env: any,
+        ctx: ExecutionContext
+    ): Promise<VCLightRequest> {
         const headers: IncomingHttpHeaders = {};
         for (const [key, value] of request.headers.entries()) {
             headers[key.toLowerCase()] = value;
@@ -137,4 +188,3 @@ export default class VCLightRequest implements VCLightRequestBase {
         });
     }
 }
-

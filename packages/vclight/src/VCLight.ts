@@ -1,10 +1,13 @@
 import VCLightMiddleware from "./types/VCLightMiddleware";
 import VCLightResponse from "./types/VCLightResponse";
+// @ts-ignore
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { IncomingMessage, ServerResponse } from "http";
-import { Context } from "@netlify/functions";
+// @ts-ignore
+import { Context as NetlifyContext } from "@netlify/functions";
 import VCLightRequest from "./types/VCLightRequest";
 import VCLightApp from "./types/VCLightApp";
+// @ts-ignore
 import { ExecutionContext } from "@cloudflare/workers-types";
 import { mergeConfig, VCLightConfig, VCLightInnerConfig } from "./types/VCLightConfig";
 
@@ -154,9 +157,19 @@ export default class VCLight implements VCLightApp {
         };
     }
 
-    public netlifyHandler(): (request: Request, context: Context) => Promise<Response> {
+    public vercelFunctionHandler(): (request: Request) => Promise<Response> {
         const that = this;
-        return async (request: Request, context: Context): Promise<Response> => {
+        return async (request: Request): Promise<Response> => {
+            const vcLightResponse = await that.fetch(
+                await VCLightRequest.fromVercelFunction(request)
+            );
+            return that.getResponse(vcLightResponse);
+        };
+    }
+
+    public netlifyHandler(): (request: Request, context: NetlifyContext) => Promise<Response> {
+        const that = this;
+        return async (request: Request, context: NetlifyContext): Promise<Response> => {
             const vcLightResponse = await that.fetch(
                 await VCLightRequest.fromNetlify(request, context)
             );
