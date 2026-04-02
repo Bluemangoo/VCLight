@@ -16,4 +16,5 @@ export async function consumeWaitUntil(
             all.push(task);
         }
     }
+    await Promise.all(tasks);
 }
